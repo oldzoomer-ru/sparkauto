@@ -1,5 +1,7 @@
 package ru.oldzoomer.view;
 
+import org.springframework.stereotype.Component;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -7,9 +9,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import ru.oldzoomer.model.Work;
 import ru.oldzoomer.repository.WorkRepository;
 
@@ -21,7 +22,6 @@ public class WorkView extends VerticalLayout {
     private final Grid<Work> grid;
     private final WorkRepository repository;
 
-    @Autowired
     public WorkView(WorkRepository repository) {
         this.repository = repository;
         this.grid = new Grid<>(Work.class, false);

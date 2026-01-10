@@ -1,5 +1,10 @@
 package ru.oldzoomer.view;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import org.springframework.stereotype.Component;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -8,18 +13,14 @@ import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import ru.oldzoomer.model.Client;
 import ru.oldzoomer.model.Order;
 import ru.oldzoomer.model.Work;
 import ru.oldzoomer.repository.ClientRepository;
 import ru.oldzoomer.repository.OrderRepository;
 import ru.oldzoomer.repository.WorkRepository;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 
 @Route(value = "orders", layout = MainView.class)
 @RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
@@ -31,7 +32,6 @@ public class OrderView extends VerticalLayout {
     private final ClientRepository clientRepo;
     private final WorkRepository workRepo;
 
-    @Autowired
     public OrderView(OrderRepository orderRepo, ClientRepository clientRepo, WorkRepository workRepo) {
         this.orderRepo = orderRepo;
         this.clientRepo = clientRepo;
