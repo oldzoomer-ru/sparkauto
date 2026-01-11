@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    image: sparkauto:latest
+    container_name: sparkauto-app
+    networks:
+      - traefik
+    labels:
+      - "traefik.http.routers.newest.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.newest.entrypoints=websecure"
+      - "traefik.http.routers.newest.tls.certresolver=myresolver"
+      - "traefik.http.routers.newest.tls.domains[0].main=${DOMAIN}"
+    restart: always
+
+networks:
+  traefik:
+    external: true
