@@ -5,6 +5,8 @@ services:
     container_name: sparkauto-app
     networks:
       - traefik
+    expose:
+      - 8080
     labels:
       - "traefik.http.routers.sparkauto.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.sparkauto.entrypoints=websecure"
