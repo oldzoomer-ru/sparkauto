@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration File 1.2//EN"
+    "https://checkstyle.org/dtds/configuration_1_2.dtd">
+
+<module name="Checker">
+  <property name="charset" value="UTF-8"/>
+
+  <module name="TreeWalker">
+    <module name="LineLength">
+      <property name="max" value="120"/>
+      <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+    
+    <module name="MethodParamPad"/>
+    <module name="NoWhitespaceAfter"/>
+    <module name="NoWhitespaceBefore"/>
+    <module name="OperatorWrap"/>
+    <module name="ParenPad"/>
+    <module name="TypecastParenPad"/>
+    <module name="WhitespaceAfter"/>
+    <module name="WhitespaceAround"/>
+    
+    <module name="AvoidStarImport"/>
+    <module name="IllegalImport"/>
+    <module name="RedundantImport"/>
+    <module name="UnusedImports"/>
+    
+    <module name="EmptyStatement"/>
+    <module name="EqualsHashCode"/>
+    <module name="FinalClass"/>
+    <module name="HideUtilityClassConstructor"/>
+    <module name="InterfaceIsType"/>
+    <module name="MutableException"/>
+    <module name="OneTopLevelClass"/>
+    <module name="PackageDeclaration"/>
+    <module name="SuperClone"/>
+    <module name="SuperEqualsHashCode"/>
+    
+    <module name="MissingOverride"/>
+    <module name="MissingSwitchDefault"/>
+    <module name="FallThrough"/>
+  </module>
+</module>
