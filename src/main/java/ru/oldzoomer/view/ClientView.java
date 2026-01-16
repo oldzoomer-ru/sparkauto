@@ -1,5 +1,6 @@
 package ru.oldzoomer.view;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,6 +21,7 @@ import ru.oldzoomer.service.ClientService;
 @RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
 @Component
 @Validated
+@Scope("prototype")
 public class ClientView extends VerticalLayout {
 
     private final Grid<Client> grid;
