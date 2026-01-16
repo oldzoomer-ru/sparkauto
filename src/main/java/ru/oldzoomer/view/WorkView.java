@@ -1,6 +1,7 @@
 package ru.oldzoomer.view;
 
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -12,18 +13,19 @@ import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.security.RolesAllowed;
 import ru.oldzoomer.model.Work;
-import ru.oldzoomer.repository.WorkRepository;
+import ru.oldzoomer.service.WorkService;
 
 @Route(value = "works", layout = MainView.class)
 @RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
 @Component
+@Validated
 public class WorkView extends VerticalLayout {
 
     private final Grid<Work> grid;
-    private final WorkRepository repository;
+    private final WorkService workService;
 
-    public WorkView(WorkRepository repository) {
-        this.repository = repository;
+    public WorkView(WorkService workService) {
+        this.workService = workService;
         this.grid = new Grid<>(Work.class, false);
         grid.addColumn(Work::getId).setHeader("ID").setVisible(false);
         grid.addColumn(Work::getName).setHeader("Название");
@@ -56,7 +58,7 @@ public class WorkView extends VerticalLayout {
             } catch (NumberFormatException ex) {
                 // ignore or set null
             }
-            repository.save(work);
+            workService.saveWork(work);
             refreshGrid();
             dialog.close();
         });
@@ -83,7 +85,7 @@ public class WorkView extends VerticalLayout {
             } catch (NumberFormatException ignored) {
                 // Ignored
             }
-            repository.save(work);
+            workService.saveWork(work);
             refreshGrid();
             dialog.close();
         });
@@ -93,6 +95,6 @@ public class WorkView extends VerticalLayout {
     }
 
     private void refreshGrid() {
-        grid.setItems(repository.findAll());
+        grid.setItems(workService.getAllWorks());
     }
 }

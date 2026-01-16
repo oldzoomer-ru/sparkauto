@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -18,24 +19,25 @@ import jakarta.annotation.security.RolesAllowed;
 import ru.oldzoomer.model.Client;
 import ru.oldzoomer.model.Order;
 import ru.oldzoomer.model.Work;
-import ru.oldzoomer.repository.ClientRepository;
-import ru.oldzoomer.repository.OrderRepository;
-import ru.oldzoomer.repository.WorkRepository;
+import ru.oldzoomer.service.ClientService;
+import ru.oldzoomer.service.OrderService;
+import ru.oldzoomer.service.WorkService;
 
 @Route(value = "orders", layout = MainView.class)
 @RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
 @Component
+@Validated
 public class OrderView extends VerticalLayout {
 
     private final Grid<Order> grid;
-    private final OrderRepository orderRepo;
-    private final ClientRepository clientRepo;
-    private final WorkRepository workRepo;
+    private final OrderService orderService;
+    private final WorkService workService;
+    private final ClientService clientService;
 
-    public OrderView(OrderRepository orderRepo, ClientRepository clientRepo, WorkRepository workRepo) {
-        this.orderRepo = orderRepo;
-        this.clientRepo = clientRepo;
-        this.workRepo = workRepo; // store repository
+    public OrderView(OrderService orderService, WorkService workService, ClientService clientService) {
+        this.orderService = orderService;
+        this.workService = workService;
+        this.clientService = clientService;
         this.grid = new Grid<>(Order.class, false);
         grid.addColumn(Order::getId).setHeader("ID").setVisible(false);
         grid.addColumn(o -> o.getClient().getName() + " " + o.getClient().getSurname()).setHeader("Клиент");
@@ -53,12 +55,12 @@ public class OrderView extends VerticalLayout {
     private void openAddDialog() {
         Dialog dialog = new Dialog();
         ComboBox<Client> clientSelect = new ComboBox<>("Клиент");
-        clientSelect.setItems(clientRepo.findAll());
+        clientSelect.setItems(clientService.getAllClients());
         clientSelect.setItemLabelGenerator(c -> c.getName() + " " + c.getSurname());
 
         // List of works with multi‑select
         MultiSelectListBox<Work> workList = new MultiSelectListBox<>();
-        workList.setItems(workRepo.findAll());
+        workList.setItems(workService.getAllWorks());
         workList.setItemLabelGenerator(Work::getName);
 
         Button save = new Button("Сохранить", ev -> {
@@ -68,7 +70,7 @@ public class OrderView extends VerticalLayout {
                 order.setClient(selected);
                 // set chosen works
                 order.setWorks(new ArrayList<>(workList.getSelectedItems()));
-                orderRepo.save(order);
+                orderService.saveOrder(order);
                 refreshGrid();
                 dialog.close();
             }
@@ -81,12 +83,12 @@ public class OrderView extends VerticalLayout {
     private void openEditDialog(Order order) {
         Dialog dialog = new Dialog();
         ComboBox<Client> clientSelect = new ComboBox<>("Клиент");
-        clientSelect.setItems(clientRepo.findAll());
+        clientSelect.setItems(clientService.getAllClients());
         clientSelect.setItemLabelGenerator(c -> c.getName() + " " + c.getSurname());
         clientSelect.setValue(order.getClient());
 
         MultiSelectListBox<Work> workList = new MultiSelectListBox<>();
-        workList.setItems(workRepo.findAll());
+        workList.setItems(workService.getAllWorks());
         workList.setItemLabelGenerator(Work::getName);
         // preselect existing works
         if (order.getWorks() != null) {
@@ -98,7 +100,7 @@ public class OrderView extends VerticalLayout {
             if (selected != null) {
                 order.setClient(selected);
                 order.setWorks(new java.util.ArrayList<>(workList.getSelectedItems()));
-                orderRepo.save(order);
+                orderService.saveOrder(order);
                 refreshGrid();
                 dialog.close();
             }
@@ -109,6 +111,6 @@ public class OrderView extends VerticalLayout {
     }
 
     private void refreshGrid() {
-        grid.setItems(orderRepo.findAll());
+        grid.setItems(orderService.getAllOrders());
     }
 }
