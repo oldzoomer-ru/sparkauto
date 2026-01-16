@@ -9,6 +9,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -23,9 +24,11 @@ public class WorkView extends VerticalLayout {
 
     private final Grid<Work> grid;
     private final WorkService workService;
+    private final BeanValidationBinder<Work> binder;
 
     public WorkView(WorkService workService) {
         this.workService = workService;
+        this.binder = new BeanValidationBinder<>(Work.class);
         this.grid = new Grid<>(Work.class, false);
         grid.addColumn(Work::getId).setHeader("ID").setVisible(false);
         grid.addColumn(Work::getName).setHeader("Название");
@@ -45,22 +48,31 @@ public class WorkView extends VerticalLayout {
         TextField normalHours = new TextField("Нормо-часов");
         TextField pricePerHour = new TextField("Цена за час");
 
+        // Bind fields to binder
+        binder.forField(name)
+                .asRequired("Название работы не может быть пустым")
+                .bind(Work::getName, Work::setName);
+        binder.forField(normalHours)
+                .asRequired("Нормо-часы не могут быть пустыми")
+                .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
+                        value -> value == null ? "" : value.toString())
+                .bind(Work::getNormalHours, Work::setNormalHours);
+        binder.forField(pricePerHour)
+                .asRequired("Цена за час не может быть пустой")
+                .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
+                        value -> value == null ? "" : value.toString())
+                .bind(Work::getPricePerHour, Work::setPricePerHour);
+
         Button save = new Button("Сохранить", ev -> {
             Work work = new Work();
-            work.setName(name.getValue());
             try {
-                work.setNormalHours(Double.valueOf(normalHours.getValue()));
-            } catch (NumberFormatException ex) {
-                // ignore or set null
+                binder.writeBean(work);
+                workService.saveWork(work);
+                refreshGrid();
+                dialog.close();
+            } catch (Exception e) {
+                // Validation errors are automatically displayed by the binder
             }
-            try {
-                work.setPricePerHour(Double.valueOf(pricePerHour.getValue()));
-            } catch (NumberFormatException ex) {
-                // ignore or set null
-            }
-            workService.saveWork(work);
-            refreshGrid();
-            dialog.close();
         });
         Button cancel = new Button("Отмена", ev -> dialog.close());
         dialog.add(name, normalHours, pricePerHour, new HorizontalLayout(save, cancel));
@@ -73,21 +85,30 @@ public class WorkView extends VerticalLayout {
         TextField normalHours = new TextField("Нормо-часов", String.valueOf(work.getNormalHours()));
         TextField pricePerHour = new TextField("Цена за час", String.valueOf(work.getPricePerHour()));
 
+        // Bind fields to binder
+        binder.forField(name)
+                .asRequired("Название работы не может быть пустым")
+                .bind(Work::getName, Work::setName);
+        binder.forField(normalHours)
+                .asRequired("Нормо-часы не могут быть пустыми")
+                .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
+                        value -> value == null ? "" : value.toString())
+                .bind(Work::getNormalHours, Work::setNormalHours);
+        binder.forField(pricePerHour)
+                .asRequired("Цена за час не может быть пустой")
+                .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
+                        value -> value == null ? "" : value.toString())
+                .bind(Work::getPricePerHour, Work::setPricePerHour);
+
         Button save = new Button("Сохранить", ev -> {
-            work.setName(name.getValue());
             try {
-                work.setNormalHours(Double.valueOf(normalHours.getValue()));
-            } catch (NumberFormatException ignored) {
-                // Ignored
+                binder.writeBean(work);
+                workService.saveWork(work);
+                refreshGrid();
+                dialog.close();
+            } catch (Exception e) {
+                // Validation errors are automatically displayed by the binder
             }
-            try {
-                work.setPricePerHour(Double.valueOf(pricePerHour.getValue()));
-            } catch (NumberFormatException ignored) {
-                // Ignored
-            }
-            workService.saveWork(work);
-            refreshGrid();
-            dialog.close();
         });
         Button cancel = new Button("Отмена", ev -> dialog.close());
         dialog.add(name, normalHours, pricePerHour, new HorizontalLayout(save, cancel));

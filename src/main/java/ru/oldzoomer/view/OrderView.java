@@ -13,6 +13,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -33,11 +34,13 @@ public class OrderView extends VerticalLayout {
     private final OrderService orderService;
     private final WorkService workService;
     private final ClientService clientService;
+    private final BeanValidationBinder<Order> binder;
 
     public OrderView(OrderService orderService, WorkService workService, ClientService clientService) {
         this.orderService = orderService;
         this.workService = workService;
         this.clientService = clientService;
+        this.binder = new BeanValidationBinder<>(Order.class);
         this.grid = new Grid<>(Order.class, false);
         grid.addColumn(Order::getId).setHeader("ID").setVisible(false);
         grid.addColumn(o -> o.getClient().getName() + " " + o.getClient().getSurname()).setHeader("Клиент");
@@ -63,16 +66,23 @@ public class OrderView extends VerticalLayout {
         workList.setItems(workService.getAllWorks());
         workList.setItemLabelGenerator(Work::getName);
 
+        // Bind fields to binder
+        binder.forField(clientSelect)
+                .asRequired("Клиент не может быть пустым")
+                .bind(Order::getClient, Order::setClient);
+        // Note: Works binding is more complex due to MultiSelectListBox
+
         Button save = new Button("Сохранить", ev -> {
-            Client selected = clientSelect.getValue();
-            if (selected != null) {
-                Order order = new Order();
-                order.setClient(selected);
-                // set chosen works
+            Order order = new Order();
+            try {
+                binder.writeBean(order);
+                // Set works manually since they're not directly bound
                 order.setWorks(new ArrayList<>(workList.getSelectedItems()));
                 orderService.saveOrder(order);
                 refreshGrid();
                 dialog.close();
+            } catch (Exception e) {
+                // Validation errors are automatically displayed by the binder
             }
         });
         Button cancel = new Button("Отмена", ev -> dialog.close());
@@ -95,14 +105,22 @@ public class OrderView extends VerticalLayout {
             workList.setValue(new HashSet<>(order.getWorks()));
         }
 
+        // Bind fields to binder
+        binder.forField(clientSelect)
+                .asRequired("Клиент не может быть пустым")
+                .bind(Order::getClient, Order::setClient);
+        // Note: Works binding is more complex due to MultiSelectListBox
+
         Button save = new Button("Сохранить", ev -> {
-            Client selected = clientSelect.getValue();
-            if (selected != null) {
-                order.setClient(selected);
-                order.setWorks(new java.util.ArrayList<>(workList.getSelectedItems()));
+            try {
+                binder.writeBean(order);
+                // Set works manually since they're not directly bound
+                order.setWorks(new ArrayList<>(workList.getSelectedItems()));
                 orderService.saveOrder(order);
                 refreshGrid();
                 dialog.close();
+            } catch (Exception e) {
+                // Validation errors are automatically displayed by the binder
             }
         });
         Button cancel = new Button("Отмена", ev -> dialog.close());

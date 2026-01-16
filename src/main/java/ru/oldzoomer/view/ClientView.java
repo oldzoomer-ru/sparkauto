@@ -9,6 +9,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -23,9 +24,11 @@ public class ClientView extends VerticalLayout {
 
     private final Grid<Client> grid;
     private final ClientService clientService;
+    private final BeanValidationBinder<Client> binder;
 
     public ClientView(ClientService clientService) {
         this.clientService = clientService;
+        this.binder = new BeanValidationBinder<>(Client.class);
         this.grid = new Grid<>(Client.class, false);
         grid.addColumn(Client::getId).setHeader("ID").setVisible(false);
         grid.addColumn(c -> c.getName() + " " + c.getSurname()).setHeader("ФИО");
@@ -48,17 +51,39 @@ public class ClientView extends VerticalLayout {
         TextField phone = new TextField("Телефон");
         TextField email = new TextField("Эл. почта");
 
+        // Bind fields to binder
+        binder.forField(name)
+                .asRequired("Имя не может быть пустым")
+                .bind(Client::getName, Client::setName);
+        binder.forField(surname)
+                .asRequired("Фамилия не может быть пустой")
+                .bind(Client::getSurname, Client::setSurname);
+        binder.forField(middleName)
+                .bind(Client::getMiddleName, Client::setMiddleName);
+        binder.forField(vin)
+                .withValidator(value -> value == null || value.isEmpty() || value.matches("^[A-HJ-NP-TV-Z0-9]{17}$"),
+                        "VIN номер должен содержать 17 символов")
+                .bind(Client::getVinNumber, Client::setVinNumber);
+        binder.forField(phone)
+                .withValidator(value -> value == null || value.isEmpty() || value.matches("^\\+?\\d{10,15}$"),
+                        "Номер телефона должен содержать от 10 до 15 цифр")
+                .bind(Client::getPhone, Client::setPhone);
+        binder.forField(email)
+                .asRequired("Email не может быть пустым")
+                .withValidator(value -> value == null || value.isEmpty() || value.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"),
+                        "Некорректный формат email")
+                .bind(Client::getEmail, Client::setEmail);
+
         Button save = new Button("Сохранить", ev -> {
             Client client = new Client();
-            client.setName(name.getValue());
-            client.setSurname(surname.getValue());
-            client.setMiddleName(middleName.getValue());
-            client.setVinNumber(vin.getValue());
-            client.setPhone(phone.getValue());
-            client.setEmail(email.getValue());
-            clientService.saveClient(client);
-            refreshGrid();
-            dialog.close();
+            try {
+                binder.writeBean(client);
+                clientService.saveClient(client);
+                refreshGrid();
+                dialog.close();
+            } catch (Exception e) {
+                // Validation errors are automatically displayed by the binder
+            }
         });
         Button cancel = new Button("Отмена", ev -> dialog.close());
         dialog.add(name, surname, middleName, vin, phone, email, new HorizontalLayout(save, cancel));
