@@ -74,9 +74,7 @@ public class OrderView extends VerticalLayout {
 
         // Bind fields to binder
         binder.forField(clientSelect)
-                .asRequired("Клиент не может быть пустым")
-                .bind(Order::getClient, Order::setClient);
-        // Note: Works binding is more complex due to MultiSelectListBox
+                .bind("client");
 
         Button save = new Button("Сохранить", ev -> {
             Order order = new Order();
@@ -124,9 +122,7 @@ public class OrderView extends VerticalLayout {
 
         // Bind fields to binder
         binder.forField(clientSelect)
-                .asRequired("Клиент не может быть пустым")
-                .bind(Order::getClient, Order::setClient);
-        // Note: Works binding is more complex due to MultiSelectListBox
+                .bind("client");
 
         Button save = new Button("Сохранить", ev -> {
             try {

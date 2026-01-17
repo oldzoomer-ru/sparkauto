@@ -35,9 +35,11 @@ public class Client {
     private String middleName;
     
     @Pattern(regexp = "^[A-HJ-NP-TV-Z0-9]{17}$", message = "VIN номер должен содержать 17 символов")
+    @NotBlank(message = "VIN номер не может быть пустым")
     private String vinNumber;
     
     @Pattern(regexp = "^\\+?\\d{10,15}$", message = "Номер телефона должен содержать от 10 до 15 цифр")
+    @NotBlank(message = "Номер телефона не может быть пустым")
     private String phone;
     
     @Email(message = "Некорректный формат email")

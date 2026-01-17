@@ -63,26 +63,17 @@ public class ClientView extends VerticalLayout {
 
         // Bind fields to binder
         binder.forField(name)
-                .asRequired("Имя не может быть пустым")
-                .bind(Client::getName, Client::setName);
+                .bind("name");
         binder.forField(surname)
-                .asRequired("Фамилия не может быть пустой")
-                .bind(Client::getSurname, Client::setSurname);
+                .bind("surname");
         binder.forField(middleName)
-                .bind(Client::getMiddleName, Client::setMiddleName);
+                .bind("middleName");
         binder.forField(vin)
-                .withValidator(value -> value == null || value.isEmpty() || value.matches("^[A-HJ-NP-TV-Z0-9]{17}$"),
-                        "VIN номер должен содержать 17 символов")
-                .bind(Client::getVinNumber, Client::setVinNumber);
+                .bind("vinNumber");
         binder.forField(phone)
-                .withValidator(value -> value == null || value.isEmpty() || value.matches("^\\+?\\d{10,15}$"),
-                        "Номер телефона должен содержать от 10 до 15 цифр")
-                .bind(Client::getPhone, Client::setPhone);
+                .bind("phone");
         binder.forField(email)
-                .asRequired("Email не может быть пустым")
-                .withValidator(value -> value == null || value.isEmpty() || value.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"),
-                        "Некорректный формат email")
-                .bind(Client::getEmail, Client::setEmail);
+                .bind("email");
 
         Button save = new Button("Сохранить", ev -> {
             Client client = new Client();

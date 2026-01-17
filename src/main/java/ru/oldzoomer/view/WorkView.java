@@ -56,18 +56,15 @@ public class WorkView extends VerticalLayout {
 
         // Bind fields to binder
         binder.forField(name)
-                .asRequired("Название работы не может быть пустым")
-                .bind(Work::getName, Work::setName);
+                .bind("name");
         binder.forField(normalHours)
-                .asRequired("Нормо-часы не могут быть пустыми")
                 .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
                         value -> value == null ? "" : value.toString())
-                .bind(Work::getNormalHours, Work::setNormalHours);
+                .bind("normalHours");
         binder.forField(pricePerHour)
-                .asRequired("Цена за час не может быть пустой")
                 .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
                         value -> value == null ? "" : value.toString())
-                .bind(Work::getPricePerHour, Work::setPricePerHour);
+                .bind("pricePerHour");
 
         Button save = new Button("Сохранить", ev -> {
             Work work = new Work();
@@ -104,18 +101,15 @@ public class WorkView extends VerticalLayout {
 
         // Bind fields to binder
         binder.forField(name)
-                .asRequired("Название работы не может быть пустым")
-                .bind(Work::getName, Work::setName);
+                .bind("name");
         binder.forField(normalHours)
-                .asRequired("Нормо-часы не могут быть пустыми")
                 .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
                         value -> value == null ? "" : value.toString())
-                .bind(Work::getNormalHours, Work::setNormalHours);
+                .bind("normalHours");
         binder.forField(pricePerHour)
-                .asRequired("Цена за час не может быть пустой")
                 .withConverter(value -> value == null || value.isEmpty() ? null : Double.valueOf(value),
                         value -> value == null ? "" : value.toString())
-                .bind(Work::getPricePerHour, Work::setPricePerHour);
+                .bind("pricePerHour");
 
         Button save = new Button("Сохранить", ev -> {
             try {
