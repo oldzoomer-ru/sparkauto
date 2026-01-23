@@ -14,6 +14,7 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.log4j.Log4j2;
 import ru.oldzoomer.model.Client;
 import ru.oldzoomer.service.ClientService;
 
@@ -22,6 +23,7 @@ import ru.oldzoomer.service.ClientService;
 @Component
 @Validated
 @Scope("prototype")
+@Log4j2
 public class ClientView extends VerticalLayout {
 
     private final Grid<Client> grid;
@@ -102,7 +104,7 @@ public class ClientView extends VerticalLayout {
                 refreshGrid();
                 dialog.close();
             } catch (Exception e) {
-                // Validation errors are automatically displayed by the binder
+                log.error(e);
             }
         });
         Button cancel = new Button("Отмена", ev -> dialog.close());
