@@ -14,9 +14,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import ru.oldzoomer.model.Client;
-import ru.oldzoomer.model.Order;
-import ru.oldzoomer.model.Work;
+import ru.oldzoomer.dto.ClientDTO;
+import ru.oldzoomer.dto.OrderDTO;
+import ru.oldzoomer.dto.WorkDTO;
 import ru.oldzoomer.service.ClientService;
 import ru.oldzoomer.service.OrderService;
 import ru.oldzoomer.service.WorkService;
@@ -32,22 +32,22 @@ import java.util.HashSet;
 @Log4j2
 public class OrderView extends VerticalLayout {
 
-    private final Grid<Order> grid;
+    private final Grid<OrderDTO> grid;
     private final OrderService orderService;
     private final WorkService workService;
     private final ClientService clientService;
-    private final BeanValidationBinder<Order> binder;
+    private final BeanValidationBinder<OrderDTO> binder;
 
     public OrderView(OrderService orderService, WorkService workService, ClientService clientService) {
         this.orderService = orderService;
         this.workService = workService;
         this.clientService = clientService;
-        this.binder = new BeanValidationBinder<>(Order.class);
-        this.grid = new Grid<>(Order.class, false);
-        grid.addColumn(Order::getId).setHeader("ID").setVisible(false);
+        this.binder = new BeanValidationBinder<>(OrderDTO.class);
+        this.grid = new Grid<>(OrderDTO.class, false);
+        grid.addColumn(OrderDTO::getId).setHeader("ID").setVisible(false);
         grid.addColumn(o -> o.getClient().getName() + " " + o.getClient().getSurname()).setHeader("Клиент");
-        grid.addColumn(Order::getTotalHours).setHeader("Нормо-часов");
-        grid.addColumn(Order::getTotalPrice).setHeader("Стоимость");
+        grid.addColumn(OrderDTO::getTotalHours).setHeader("Нормо-часов");
+        grid.addColumn(OrderDTO::getTotalPrice).setHeader("Стоимость");
         // Add delete and edit button columns
         grid.addComponentColumn(order -> new Button("Редактировать",
                 _ -> openEditDialog(order))).setHeader("Редактирование");
@@ -62,7 +62,7 @@ public class OrderView extends VerticalLayout {
         setSpacing(true);
     }
 
-    private void deleteOrder(Order order) {
+    private void deleteOrder(OrderDTO order) {
         Dialog dialog = new Dialog();
         dialog.add("Вы уверены, что хотите удалить заказ клиента " + order.getClient().getName() + " " + order.getClient().getSurname() + "?");
 
@@ -81,21 +81,21 @@ public class OrderView extends VerticalLayout {
 
     private void openAddDialog() {
         Dialog dialog = new Dialog();
-        ComboBox<Client> clientSelect = new ComboBox<>("Клиент");
+        ComboBox<ClientDTO> clientSelect = new ComboBox<>("Клиент");
         clientSelect.setItems(clientService.getAllClients());
         clientSelect.setItemLabelGenerator(c -> c.getName() + " " + c.getSurname());
 
         // List of works with multi‑select
-        MultiSelectListBox<Work> workList = new MultiSelectListBox<>();
+        MultiSelectListBox<WorkDTO> workList = new MultiSelectListBox<>();
         workList.setItems(workService.getAllWorks());
-        workList.setItemLabelGenerator(Work::getName);
+        workList.setItemLabelGenerator(WorkDTO::getName);
 
         // Bind fields to binder
         binder.forField(clientSelect)
                 .bind("client");
 
         Button save = new Button("Сохранить", _ -> {
-            Order order = new Order();
+            OrderDTO order = new OrderDTO();
             try {
                 binder.writeBean(order);
                 // Set works manually since they're not directly bound
@@ -123,16 +123,16 @@ public class OrderView extends VerticalLayout {
         dialog.open();
     }
 
-    private void openEditDialog(Order order) {
+    private void openEditDialog(OrderDTO order) {
         Dialog dialog = new Dialog();
-        ComboBox<Client> clientSelect = new ComboBox<>("Клиент");
+        ComboBox<ClientDTO> clientSelect = new ComboBox<>("Клиент");
         clientSelect.setItems(clientService.getAllClients());
         clientSelect.setItemLabelGenerator(c -> c.getName() + " " + c.getSurname());
         clientSelect.setValue(order.getClient());
 
-        MultiSelectListBox<Work> workList = new MultiSelectListBox<>();
+        MultiSelectListBox<WorkDTO> workList = new MultiSelectListBox<>();
         workList.setItems(workService.getAllWorks());
-        workList.setItemLabelGenerator(Work::getName);
+        workList.setItemLabelGenerator(WorkDTO::getName);
         // preselect existing works
         if (order.getWorks() != null) {
             workList.setValue(new HashSet<>(order.getWorks()));

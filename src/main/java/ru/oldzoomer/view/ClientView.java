@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import ru.oldzoomer.model.Client;
+import ru.oldzoomer.dto.ClientDTO;
 import ru.oldzoomer.service.ClientService;
 
 @Route(value = "clients", layout = MainView.class)
@@ -24,20 +24,20 @@ import ru.oldzoomer.service.ClientService;
 @Log4j2
 public class ClientView extends VerticalLayout {
 
-    private final Grid<Client> grid;
+    private final Grid<ClientDTO> grid;
     private final ClientService clientService;
-    private final BeanValidationBinder<Client> binder;
+    private final BeanValidationBinder<ClientDTO> binder;
 
     public ClientView(ClientService clientService) {
         this.clientService = clientService;
-        this.binder = new BeanValidationBinder<>(Client.class);
-        this.grid = new Grid<>(Client.class, false);
-        grid.addColumn(Client::getId).setHeader("ID").setVisible(false);
+        this.binder = new BeanValidationBinder<>(ClientDTO.class);
+        this.grid = new Grid<>(ClientDTO.class, false);
+        grid.addColumn(ClientDTO::getId).setHeader("ID").setVisible(false);
         grid.addColumn(c -> c.getName() + " " + c.getSurname()).setHeader("ФИО");
-        grid.addColumn(Client::getMiddleName).setHeader("Отчество");
-        grid.addColumn(Client::getVinNumber).setHeader("VIN");
-        grid.addColumn(Client::getPhone).setHeader("Телефон");
-        grid.addColumn(Client::getEmail).setHeader("Эл. почта");
+        grid.addColumn(ClientDTO::getMiddleName).setHeader("Отчество");
+        grid.addColumn(ClientDTO::getVinNumber).setHeader("VIN");
+        grid.addColumn(ClientDTO::getPhone).setHeader("Телефон");
+        grid.addColumn(ClientDTO::getEmail).setHeader("Эл. почта");
         // Add delete button column
         grid.addComponentColumn(client -> new Button("Удалить", _ -> deleteClient(client))).setHeader("Удаление");
         grid.setItems(clientService.getAllClients());
@@ -54,7 +54,7 @@ public class ClientView extends VerticalLayout {
         setSpacing(true);
     }
 
-    private void deleteClient(Client client) {
+    private void deleteClient(ClientDTO client) {
         Dialog dialog = new Dialog();
         dialog.add("Вы уверены, что хотите удалить клиента " + client.getName() + " " + client.getSurname() + "?");
 
@@ -95,7 +95,7 @@ public class ClientView extends VerticalLayout {
                 .bind("email");
 
         Button save = new Button("Сохранить", _ -> {
-            Client client = new Client();
+            ClientDTO client = new ClientDTO();
             try {
                 binder.writeBean(client);
                 clientService.saveClient(client);

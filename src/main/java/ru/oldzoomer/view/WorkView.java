@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import ru.oldzoomer.model.Work;
+import ru.oldzoomer.dto.WorkDTO;
 import ru.oldzoomer.service.WorkService;
 
 @Route(value = "works", layout = MainView.class)
@@ -24,18 +24,18 @@ import ru.oldzoomer.service.WorkService;
 @Log4j2
 public class WorkView extends VerticalLayout {
 
-    private final Grid<Work> grid;
+    private final Grid<WorkDTO> grid;
     private final WorkService workService;
-    private final BeanValidationBinder<Work> binder;
+    private final BeanValidationBinder<WorkDTO> binder;
 
     public WorkView(WorkService workService) {
         this.workService = workService;
-        this.binder = new BeanValidationBinder<>(Work.class);
-        this.grid = new Grid<>(Work.class, false);
-        grid.addColumn(Work::getId).setHeader("ID").setVisible(false);
-        grid.addColumn(Work::getName).setHeader("Название");
-        grid.addColumn(Work::getNormalHours).setHeader("Нормо-часов");
-        grid.addColumn(Work::getPricePerHour).setHeader("Цена за час");
+        this.binder = new BeanValidationBinder<>(WorkDTO.class);
+        this.grid = new Grid<>(WorkDTO.class, false);
+        grid.addColumn(WorkDTO::getId).setHeader("ID").setVisible(false);
+        grid.addColumn(WorkDTO::getName).setHeader("Название");
+        grid.addColumn(WorkDTO::getNormalHours).setHeader("Нормо-часов");
+        grid.addColumn(WorkDTO::getPricePerHour).setHeader("Цена за час");
         // Add delete and edit button columns
         grid.addComponentColumn(work -> new Button("Редактировать", _ -> openEditDialog(work))).setHeader("Редактирование");
         grid.addComponentColumn(work -> new Button("Удалить", _ -> deleteWork(work))).setHeader("Удаление");
@@ -49,7 +49,7 @@ public class WorkView extends VerticalLayout {
         setSpacing(true);
     }
 
-    private void deleteWork(Work work) {
+    private void deleteWork(WorkDTO work) {
         Dialog dialog = new Dialog();
         dialog.add("Вы уверены, что хотите удалить работу '" + work.getName() + "'?");
 
@@ -85,7 +85,7 @@ public class WorkView extends VerticalLayout {
                 .bind("pricePerHour");
 
         Button save = new Button("Сохранить", _ -> {
-            Work work = new Work();
+            WorkDTO work = new WorkDTO();
             try {
                 binder.writeBean(work);
                 workService.saveWork(work);
@@ -111,7 +111,7 @@ public class WorkView extends VerticalLayout {
         dialog.open();
     }
 
-    private void openEditDialog(Work work) {
+    private void openEditDialog(WorkDTO work) {
         Dialog dialog = new Dialog();
         TextField name = new TextField("Название", work.getName());
         TextField normalHours = new TextField("Нормо-часов", String.valueOf(work.getNormalHours()));
