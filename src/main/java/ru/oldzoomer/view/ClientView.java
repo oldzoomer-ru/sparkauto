@@ -9,20 +9,22 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.dto.ClientDTO;
 import ru.oldzoomer.service.ClientService;
 import ru.oldzoomer.view.util.DialogUtil;
 
-@Route(value = "clients", layout = MainView.class)
+@Route(value = "", layout = MainView.class)
+@RouteAlias(value = "clients", layout = MainView.class)
+@PageTitle("Клиенты")
 @RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
 @Component
-@Validated
 @Scope("prototype")
 @Log4j2
 public class ClientView extends VerticalLayout {

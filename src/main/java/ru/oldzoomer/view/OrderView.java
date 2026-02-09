@@ -10,12 +10,12 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.dto.ClientDTO;
 import ru.oldzoomer.dto.OrderDTO;
 import ru.oldzoomer.dto.WorkDTO;
@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 @Route(value = "orders", layout = MainView.class)
+@PageTitle("Заказы")
 @RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
 @Component
-@Validated
 @Scope("prototype")
 @Log4j2
 public class OrderView extends VerticalLayout {
