@@ -1,14 +1,13 @@
 package ru.oldzoomer.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.model.Client;
 import ru.oldzoomer.repository.ClientRepository;
+
+import java.util.List;
 
 @Service
 @Validated
@@ -16,10 +15,9 @@ import ru.oldzoomer.repository.ClientRepository;
 public class ClientService {
     
     private final ClientRepository repository;
-    
-    @Valid
-    public Client saveClient(@Valid Client client) {
-        return repository.save(client);
+
+    public void saveClient(@Valid Client client) {
+        repository.save(client);
     }
     
     public List<Client> getAllClients() {

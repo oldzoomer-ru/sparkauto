@@ -1,14 +1,13 @@
 package ru.oldzoomer.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.model.Work;
 import ru.oldzoomer.repository.WorkRepository;
+
+import java.util.List;
 
 @Service
 @Validated
@@ -16,10 +15,9 @@ import ru.oldzoomer.repository.WorkRepository;
 public class WorkService {
     
     private final WorkRepository repository;
-    
-    @Valid
-    public Work saveWork(@Valid Work work) {
-        return repository.save(work);
+
+    public void saveWork(@Valid Work work) {
+        repository.save(work);
     }
     
     public List<Work> getAllWorks() {

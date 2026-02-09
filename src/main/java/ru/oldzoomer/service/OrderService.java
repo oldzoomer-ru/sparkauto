@@ -1,14 +1,13 @@
 package ru.oldzoomer.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.model.Order;
 import ru.oldzoomer.repository.OrderRepository;
+
+import java.util.List;
 
 @Service
 @Validated
@@ -16,10 +15,9 @@ import ru.oldzoomer.repository.OrderRepository;
 public class OrderService {
     
     private final OrderRepository orderRepository;
-    
-    @Valid
-    public Order saveOrder(@Valid Order order) {
-        return orderRepository.save(order);
+
+    public void saveOrder(@Valid Order order) {
+        orderRepository.save(order);
     }
     
     public List<Order> getAllOrders() {
