@@ -31,7 +31,7 @@ public class Client {
 
     private String email;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @ToString.Exclude
     private List<Order> orders;
 
