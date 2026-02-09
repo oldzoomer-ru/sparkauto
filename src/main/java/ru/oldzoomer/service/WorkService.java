@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.dto.WorkDTO;
 import ru.oldzoomer.mapper.WorkMapper;
+import ru.oldzoomer.model.Order;
 import ru.oldzoomer.model.Work;
+import ru.oldzoomer.repository.OrderRepository;
 import ru.oldzoomer.repository.WorkRepository;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class WorkService {
     
     private final WorkRepository repository;
+    private final OrderRepository orderRepository;
     private final WorkMapper workMapper;
 
     public void saveWork(@Valid WorkDTO workDTO) {
@@ -29,6 +32,21 @@ public class WorkService {
     }
     
     public void deleteWork(Long id) {
+        // Find all orders that use this work
+        Work work = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Work not found with id: " + id));
+
+        // Efficiently find all orders that reference this work
+        List<Order> ordersWithWork = orderRepository.findOrdersByWorkId(id);
+        // Remove the work from each order's works list
+        for (Order order : ordersWithWork) {
+            order.getWorks().remove(work);
+        }
+
+        // Save updated orders to ensure consistency
+        orderRepository.saveAll(ordersWithWork);
+
+        // Now delete the work itself
         repository.deleteById(id);
     }
 }
