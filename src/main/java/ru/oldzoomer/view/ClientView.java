@@ -1,9 +1,5 @@
 package ru.oldzoomer.view;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -12,9 +8,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
-
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.model.Client;
 import ru.oldzoomer.service.ClientService;
 
@@ -41,14 +39,14 @@ public class ClientView extends VerticalLayout {
         grid.addColumn(Client::getPhone).setHeader("Телефон");
         grid.addColumn(Client::getEmail).setHeader("Эл. почта");
         // Add delete button column
-        grid.addComponentColumn(client -> new Button("Удалить", e -> deleteClient(client))).setHeader("Действия");
+        grid.addComponentColumn(client -> new Button("Удалить", _ -> deleteClient(client))).setHeader("Удаление");
         grid.setItems(clientService.getAllClients());
         
         // Make grid responsive
         grid.setMinWidth("300px");
         grid.setWidth("100%");
 
-        Button addBtn = new Button("Добавить клиента", e -> openAddDialog());
+        Button addBtn = new Button("Добавить клиента", _ -> openAddDialog());
         addBtn.setWidthFull();
         
         add(addBtn, grid);
@@ -59,13 +57,13 @@ public class ClientView extends VerticalLayout {
     private void deleteClient(Client client) {
         Dialog dialog = new Dialog();
         dialog.add("Вы уверены, что хотите удалить клиента " + client.getName() + " " + client.getSurname() + "?");
-        
-        Button confirm = new Button("Удалить", e -> {
+
+        Button confirm = new Button("Удалить", _ -> {
             clientService.deleteClient(client.getId());
             refreshGrid();
             dialog.close();
         });
-        Button cancel = new Button("Отмена", e -> dialog.close());
+        Button cancel = new Button("Отмена", _ -> dialog.close());
         
         HorizontalLayout buttonLayout = new HorizontalLayout(confirm, cancel);
         buttonLayout.setSpacing(true);
@@ -96,7 +94,7 @@ public class ClientView extends VerticalLayout {
         binder.forField(email)
                 .bind("email");
 
-        Button save = new Button("Сохранить", ev -> {
+        Button save = new Button("Сохранить", _ -> {
             Client client = new Client();
             try {
                 binder.writeBean(client);
@@ -107,7 +105,7 @@ public class ClientView extends VerticalLayout {
                 log.error(e);
             }
         });
-        Button cancel = new Button("Отмена", ev -> dialog.close());
+        Button cancel = new Button("Отмена", _ -> dialog.close());
         
         // Make form responsive for mobile
         VerticalLayout formLayout = new VerticalLayout(name, surname, middleName, vin, phone, email);

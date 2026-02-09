@@ -1,9 +1,5 @@
 package ru.oldzoomer.view;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -12,9 +8,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.Route;
-
 import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import ru.oldzoomer.model.Work;
 import ru.oldzoomer.service.WorkService;
 
@@ -39,11 +37,11 @@ public class WorkView extends VerticalLayout {
         grid.addColumn(Work::getNormalHours).setHeader("Нормо-часов");
         grid.addColumn(Work::getPricePerHour).setHeader("Цена за час");
         // Add delete and edit button columns
-        grid.addComponentColumn(work -> new Button("Редактировать", e -> openEditDialog(work))).setHeader("Действия");
-        grid.addComponentColumn(work -> new Button("Удалить", e -> deleteWork(work))).setHeader("Действия");
+        grid.addComponentColumn(work -> new Button("Редактировать", _ -> openEditDialog(work))).setHeader("Редактирование");
+        grid.addComponentColumn(work -> new Button("Удалить", _ -> deleteWork(work))).setHeader("Удаление");
         refreshGrid();
 
-        Button addBtn = new Button("Добавить работу", e -> openAddDialog());
+        Button addBtn = new Button("Добавить работу", _ -> openAddDialog());
         addBtn.setWidthFull();
         
         add(addBtn, grid);
@@ -54,13 +52,13 @@ public class WorkView extends VerticalLayout {
     private void deleteWork(Work work) {
         Dialog dialog = new Dialog();
         dialog.add("Вы уверены, что хотите удалить работу '" + work.getName() + "'?");
-        
-        Button confirm = new Button("Удалить", e -> {
+
+        Button confirm = new Button("Удалить", _ -> {
             workService.deleteWork(work.getId());
             refreshGrid();
             dialog.close();
         });
-        Button cancel = new Button("Отмена", e -> dialog.close());
+        Button cancel = new Button("Отмена", _ -> dialog.close());
         
         HorizontalLayout buttonLayout = new HorizontalLayout(confirm, cancel);
         buttonLayout.setSpacing(true);
@@ -86,7 +84,7 @@ public class WorkView extends VerticalLayout {
                         value -> value == null ? "" : value.toString())
                 .bind("pricePerHour");
 
-        Button save = new Button("Сохранить", ev -> {
+        Button save = new Button("Сохранить", _ -> {
             Work work = new Work();
             try {
                 binder.writeBean(work);
@@ -97,7 +95,7 @@ public class WorkView extends VerticalLayout {
                 log.error(e);
             }
         });
-        Button cancel = new Button("Отмена", ev -> dialog.close());
+        Button cancel = new Button("Отмена", _ -> dialog.close());
         
         // Make form responsive for mobile
         VerticalLayout formLayout = new VerticalLayout(name, normalHours, pricePerHour);
@@ -132,17 +130,17 @@ public class WorkView extends VerticalLayout {
                 .bind("pricePerHour");
         binder.setBean(work);
 
-        Button save = new Button("Сохранить", ev -> {
+        Button save = new Button("Сохранить", _ -> {
             try {
                 binder.writeBean(work);
                 workService.saveWork(work);
                 refreshGrid();
                 dialog.close();
-            } catch (Exception e) {
+            } catch (Exception _) {
                 // Validation errors are automatically displayed by the binder
             }
         });
-        Button cancel = new Button("Отмена", ev -> dialog.close());
+        Button cancel = new Button("Отмена", _ -> dialog.close());
         
         // Make form responsive for mobile
         VerticalLayout formLayout = new VerticalLayout(name, normalHours, pricePerHour);
