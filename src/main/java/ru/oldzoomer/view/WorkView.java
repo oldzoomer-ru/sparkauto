@@ -3,6 +3,7 @@ package ru.oldzoomer.view;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -54,9 +55,16 @@ public class WorkView extends VerticalLayout {
         dialog.add("Вы уверены, что хотите удалить работу '" + work.getName() + "'?");
 
         Button confirm = new Button("Удалить", _ -> {
-            workService.deleteWork(work.getId());
-            refreshGrid();
-            dialog.close();
+            try {
+                workService.deleteWork(work.getId());
+                refreshGrid();
+                dialog.close();
+                Notification.show("Работа успешно удалена");
+            } catch (Exception e) {
+                log.error("Error deleting work: {}", work.getId(), e);
+                dialog.close();
+                Notification.show("Ошибка при удалении работы", 3000, Notification.Position.MIDDLE);
+            }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());
         
@@ -91,8 +99,10 @@ public class WorkView extends VerticalLayout {
                 workService.saveWork(work);
                 refreshGrid();
                 dialog.close();
+                Notification.show("Работа успешно добавлена");
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error saving work", e);
+                Notification.show("Ошибка при сохранении работы", 3000, Notification.Position.MIDDLE);
             }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());
@@ -136,8 +146,10 @@ public class WorkView extends VerticalLayout {
                 workService.saveWork(work);
                 refreshGrid();
                 dialog.close();
-            } catch (Exception _) {
-                // Validation errors are automatically displayed by the binder
+                Notification.show("Работа успешно обновлена");
+            } catch (Exception e) {
+                log.error("Error updating work: {}", work.getId(), e);
+                Notification.show("Ошибка при сохранении работы", 3000, Notification.Position.MIDDLE);
             }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());

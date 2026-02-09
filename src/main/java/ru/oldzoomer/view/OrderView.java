@@ -5,6 +5,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -67,9 +68,16 @@ public class OrderView extends VerticalLayout {
         dialog.add("Вы уверены, что хотите удалить заказ клиента " + order.getClient().getName() + " " + order.getClient().getSurname() + "?");
 
         Button confirm = new Button("Удалить", _ -> {
-            orderService.deleteOrder(order.getId());
-            refreshGrid();
-            dialog.close();
+            try {
+                orderService.deleteOrder(order.getId());
+                refreshGrid();
+                dialog.close();
+                Notification.show("Заказ успешно удален");
+            } catch (Exception e) {
+                log.error("Error deleting order: {}", order.getId(), e);
+                dialog.close();
+                Notification.show("Ошибка при удалении заказа", 3000, Notification.Position.MIDDLE);
+            }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());
         
@@ -103,8 +111,10 @@ public class OrderView extends VerticalLayout {
                 orderService.saveOrder(order);
                 refreshGrid();
                 dialog.close();
+                Notification.show("Заказ успешно добавлен");
             } catch (Exception e) {
-                log.error(e);
+                log.error("Error saving order", e);
+                Notification.show("Ошибка при сохранении заказа", 3000, Notification.Position.MIDDLE);
             }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());
@@ -151,8 +161,10 @@ public class OrderView extends VerticalLayout {
                 orderService.saveOrder(order);
                 refreshGrid();
                 dialog.close();
-            } catch (Exception _) {
-                // Validation errors are automatically displayed by the binder
+                Notification.show("Заказ успешно обновлен");
+            } catch (Exception e) {
+                log.error("Error updating order: {}", order.getId(), e);
+                Notification.show("Ошибка при сохранении заказа", 3000, Notification.Position.MIDDLE);
             }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());
