@@ -31,11 +31,8 @@ public class ClientView extends VerticalLayout {
 
     private final Grid<ClientDTO> grid;
     private final ClientService clientService;
-    private final BeanValidationBinder<ClientDTO> binder;
-
     public ClientView(ClientService clientService) {
         this.clientService = clientService;
-        this.binder = new BeanValidationBinder<>(ClientDTO.class);
         this.grid = new Grid<>(ClientDTO.class, false);
         grid.addColumn(ClientDTO::getId).setHeader("ID").setVisible(false);
         grid.addColumn(c -> c.getName() + " " + c.getSurname()).setHeader("ФИО");
@@ -87,6 +84,9 @@ public class ClientView extends VerticalLayout {
         TextField vin = new TextField();
         TextField phone = new TextField();
         TextField email = new TextField();
+
+        // Create local binder instance
+        BeanValidationBinder<ClientDTO> binder = new BeanValidationBinder<>(ClientDTO.class);
 
         // Bind fields to binder
         binder.forField(name)

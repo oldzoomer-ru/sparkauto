@@ -39,13 +39,11 @@ public class OrderView extends VerticalLayout {
     private final OrderService orderService;
     private final WorkService workService;
     private final ClientService clientService;
-    private final BeanValidationBinder<OrderDTO> binder;
 
     public OrderView(OrderService orderService, WorkService workService, ClientService clientService) {
         this.orderService = orderService;
         this.workService = workService;
         this.clientService = clientService;
-        this.binder = new BeanValidationBinder<>(OrderDTO.class);
         this.grid = new Grid<>(OrderDTO.class, false);
         grid.addColumn(OrderDTO::getId).setHeader("ID").setVisible(false);
         grid.addColumn(o -> o.getClient().getName() + " " + o.getClient().getSurname()).setHeader("Клиент");
@@ -59,7 +57,7 @@ public class OrderView extends VerticalLayout {
 
         Button addBtn = new Button("Добавить заказ", _ -> openAddDialog());
         addBtn.setWidthFull();
-        
+
         add(addBtn, grid);
         setPadding(true);
         setSpacing(true);
@@ -82,7 +80,7 @@ public class OrderView extends VerticalLayout {
             }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());
-        
+
         HorizontalLayout buttonLayout = new HorizontalLayout(confirm, cancel);
         buttonLayout.setSpacing(true);
         dialog.getFooter().add(buttonLayout);
@@ -99,6 +97,9 @@ public class OrderView extends VerticalLayout {
         MultiSelectComboBox<WorkDTO> workList = new MultiSelectComboBox<>();
         workList.setItems(workService.getAllWorks());
         workList.setItemLabelGenerator(WorkDTO::getName);
+
+        // Create local binder instance
+        BeanValidationBinder<OrderDTO> binder = new BeanValidationBinder<>(OrderDTO.class);
 
         // Bind fields to binder
         binder.forField(clientSelect)
@@ -143,6 +144,9 @@ public class OrderView extends VerticalLayout {
         if (order.getWorks() != null) {
             workList.setValue(new HashSet<>(order.getWorks()));
         }
+
+        // Create local binder instance
+        BeanValidationBinder<OrderDTO> binder = new BeanValidationBinder<>(OrderDTO.class);
 
         // Bind fields to binder
         binder.forField(clientSelect)

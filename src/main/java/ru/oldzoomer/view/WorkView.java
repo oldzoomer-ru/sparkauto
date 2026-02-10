@@ -29,11 +29,9 @@ public class WorkView extends VerticalLayout {
 
     private final Grid<WorkDTO> grid;
     private final WorkService workService;
-    private final BeanValidationBinder<WorkDTO> binder;
 
     public WorkView(WorkService workService) {
         this.workService = workService;
-        this.binder = new BeanValidationBinder<>(WorkDTO.class);
         this.grid = new Grid<>(WorkDTO.class, false);
         grid.addColumn(WorkDTO::getId).setHeader("ID").setVisible(false);
         grid.addColumn(WorkDTO::getName).setHeader("Название");
@@ -46,7 +44,7 @@ public class WorkView extends VerticalLayout {
 
         Button addBtn = new Button("Добавить работу", _ -> openAddDialog());
         addBtn.setWidthFull();
-        
+
         add(addBtn, grid);
         setPadding(true);
         setSpacing(true);
@@ -69,7 +67,7 @@ public class WorkView extends VerticalLayout {
             }
         });
         Button cancel = new Button("Отмена", _ -> dialog.close());
-        
+
         HorizontalLayout buttonLayout = new HorizontalLayout(confirm, cancel);
         buttonLayout.setSpacing(true);
         dialog.getFooter().add(buttonLayout);
@@ -81,6 +79,9 @@ public class WorkView extends VerticalLayout {
         TextField name = new TextField();
         TextField normalHours = new TextField();
         TextField pricePerHour = new TextField();
+
+        // Create local binder instance
+        BeanValidationBinder<WorkDTO> binder = new BeanValidationBinder<>(WorkDTO.class);
 
         // Bind fields to binder
         binder.forField(name)
@@ -127,6 +128,9 @@ public class WorkView extends VerticalLayout {
         name.setPlaceholder(work.getName());
         normalHours.setPlaceholder(work.getNormalHours().toString());
         pricePerHour.setPlaceholder(work.getPricePerHour().toString());
+
+        // Create local binder instance
+        BeanValidationBinder<WorkDTO> binder = new BeanValidationBinder<>(WorkDTO.class);
 
         // Bind fields to binder
         binder.forField(name)
