@@ -7,13 +7,13 @@ Sparkauto CRM is a comprehensive Customer Relationship Management (CRM) applicat
 - **Client Management**: Store and manage client information including personal details, contact information, and vehicle data
 - **Order Management**: Create and track service orders with detailed work assignments
 - **Work Tracking**: Manage different types of work with hours and pricing information
-- **User Authentication**: Role-based access control (ADMIN and USER roles)
+- **User Authentication**: Role-based access control (ADMIN role)
 - **Database Integration**: Built-in H2 database for development and easy migration to production databases
 - **Responsive UI**: Modern web interface built with Vaadin Framework
 
 ## Technologies Used
 
-- **Backend**: Spring Boot, Spring Data JPA, Spring Security
+- **Backend**: Spring Boot, Spring Data JPA, Spring Security, MapStruct
 - **Frontend**: Vaadin Framework (Java-based UI components)
 - **Database**: H2 (in-memory) for development, easily configurable for production
 - **Build Tool**: Maven
@@ -62,9 +62,11 @@ src/
 │   ├── java/ru/oldzoomer/
 │   │   ├── Application.java          # Main application class
 │   │   ├── model/                    # Data models (Client, Order, Work)
-│   │   ├── repository/               # Data access layer
-│   │   ├── security/                 # Security configuration
+│   │   ├── repository/               # Data access layer (JPA repositories)
 │   │   ├── service/                  # Business logic layer
+│   │   ├── dto/                      # Data Transfer Objects for API communication
+│   │   ├── mapper/                   # MapStruct mappers between entities and DTOs
+│   │   ├── security/                 # Security configuration
 │   │   └── view/                     # UI views and navigation
 │   └── resources/
 │       └── application.properties    # Application configuration
@@ -87,6 +89,42 @@ The default admin user is:
 
 - Username: `admin`
 - Password: `admin`
+
+## Architecture Overview
+
+The application follows a layered architecture pattern:
+
+1. **Presentation Layer**: Vaadin-based UI components for user interaction
+2. **Controller Layer**: Spring MVC controllers managing HTTP requests
+3. **Service Layer**: Business logic implementation with validation
+4. **Repository Layer**: Data access using Spring Data JPA
+5. **Model Layer**: JPA entities representing database schema
+
+## Component Diagram
+
+```mermaid
+graph TD
+    A[Frontend - Vaadin UI] --> B[Spring Boot Application]
+    B --> C[Security Layer]
+    B --> D[Service Layer]
+    D --> E[Repository Layer]
+    E --> F[Database - H2]
+    D --> G[DTOs & Mappers]
+    G --> H[Data Transfer Objects]
+    G --> I[MapStruct Mappers]
+    C --> J[Authentication]
+    
+    style A fill:#e1f5fe,stroke:#000
+    style B fill:#f3e5f5,stroke:#000
+    style C fill:#fff3e0,stroke:#000
+    style D fill:#e8f5e9,stroke:#000
+    style E fill:#fce4ec,stroke:#000
+    style F fill:#ffebee,stroke:#000
+    style G fill:#fafafa,stroke:#000
+    style H fill:#fff8e1,stroke:#000
+    style I fill:#f1f8e9,stroke:#000
+    style J fill:#f3e5f5,stroke:#000
+```
 
 ## Acknowledgments
 
