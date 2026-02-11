@@ -113,17 +113,6 @@ graph TD
     G --> H[Data Transfer Objects]
     G --> I[MapStruct Mappers]
     C --> J[Authentication]
-    
-    style A fill:#e1f5fe,stroke:#000
-    style B fill:#f3e5f5,stroke:#000
-    style C fill:#fff3e0,stroke:#000
-    style D fill:#e8f5e9,stroke:#000
-    style E fill:#fce4ec,stroke:#000
-    style F fill:#ffebee,stroke:#000
-    style G fill:#fafafa,stroke:#000
-    style H fill:#fff8e1,stroke:#000
-    style I fill:#f1f8e9,stroke:#000
-    style J fill:#f3e5f5,stroke:#000
 ```
 
 ## Acknowledgments
